@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FILE HUB — Tải File Tốc Độ Cao</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #f5c842;
+    --gold2: #e8a800;
+    --gold3: #fff0a0;
+    --bg: #0a0a0f;
+    --bg2: #11111a;
+    --bg3: #18182a;
+    --accent: #1a1a30;
+    --text: #e8e8f0;
+    --text2: #aaa;
+    --border: #2a2a45;
+    --red: #ff3860;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;min-height:100vh;overflow-x:hidden;}
+  body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;position:relative;}
+
+  #particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;z-index:1;}
+  .wrapper{position:relative;z-index:2;}
+
+  /* HEADER */
+  header{
+    background:linear-gradient(135deg,#0d0d18 0%,#1a1a30 50%,#0d0d18 100%);
+    border-bottom:2px solid var(--gold);
+    padding:0 40px;position:sticky;top:0;z-index:100;
+    box-shadow:0 0 40px rgba(245,200,66,.15);
+  }
+  .header-inner{display:flex;align-items:center;justify-content:space-between;height:72px;}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-text{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;letter-spacing:4px;background:linear-gradient(90deg,var(--gold),#fff,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s infinite;background-size:200% auto;}
+  @keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+  .logo-badge{background:var(--gold);color:#000;font-size:10px;font-weight:900;padding:3px 10px;letter-spacing:2px;animation:pulse-badge 2s infinite;}
+  @keyframes pulse-badge{0%,100%{box-shadow:0 0 0 0 rgba(245,200,66,.6)}50%{box-shadow:0 0 0 8px rgba(245,200,66,0)}}
+  .owner-tag{display:flex;gap:14px;align-items:center;font-size:13px;}
+  .owner-tag span{color:var(--text2);}
+  .owner-name{color:var(--gold);font-weight:700;}
+  .hotline{color:var(--gold);font-weight:700;letter-spacing:1px;text-decoration:none;}
+  .hotline:hover{color:var(--gold3);}
+
+  /* HERO */
+  .hero{text-align:center;padding:72px 20px 48px;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(245,200,66,.07) 0%,transparent 70%);}
+  .hero-title{font-size:clamp(40px,8vw,90px);font-weight:900;letter-spacing:-2px;line-height:1;background:linear-gradient(135deg,var(--gold3) 0%,var(--gold) 50%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeUp .7s ease both;}
+  .hero-sub{margin-top:16px;font-size:15px;color:var(--text2);letter-spacing:3px;text-transform:uppercase;animation:fadeUp .7s .12s ease both;opacity:0;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+  .hero-line{display:flex;align-items:center;gap:12px;justify-content:center;margin:28px auto 0;max-width:500px;animation:fadeUp .7s .25s ease both;opacity:0;}
+  .line-seg{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .line-diamond{width:8px;height:8px;background:var(--gold);transform:rotate(45deg);flex-shrink:0;}
+
+  /* STATS */
+  .stats-bar{display:flex;justify-content:center;gap:0;padding:18px 20px;background:rgba(245,200,66,.05);border-top:1px solid var(--border);border-bottom:1px solid var(--border);animation:fadeUp .7s .35s ease both;opacity:0;}
+  .stat{text-align:center;padding:0 40px;border-right:1px solid var(--border);}
+  .stat:last-child{border-right:none;}
+  .stat-num{font-size:28px;font-weight:900;color:var(--gold);font-family:'Rajdhani',sans-serif;}
+  .stat-label{font-size:10px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+
+  /* SEARCH */
+  .search-wrap{padding:32px 20px 16px;max-width:1000px;margin:0 auto;animation:fadeUp .7s .45s ease both;opacity:0;}
+  .search-box{display:flex;border:1px solid var(--gold);background:var(--bg2);box-shadow:0 0 24px rgba(245,200,66,.1);}
+  .search-box input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:16px;padding:16px 22px;}
+  .search-box input::placeholder{color:var(--text2);}
+  .search-box button{background:var(--gold);color:#000;font-weight:700;font-size:13px;border:none;padding:0 28px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:background .2s;}
+  .search-box button:hover{background:var(--gold3);}
+
+  /* FILTER */
+  .filter-wrap{display:flex;gap:0;padding:0 20px;max-width:1000px;margin:12px auto 0;overflow-x:auto;}
+  .filter-tab{padding:9px 22px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all .2s;margin-right:-1px; user-select:none;}
+  .filter-tab:hover{color:var(--gold);border-color:var(--gold);}
+  .filter-tab.active{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700;}
+
+  /* FILE GRID */
+  .files-section{max-width:1000px;margin:0 auto;padding:24px 20px 80px;}
+  .section-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .section-label::before{content:'';flex:0 0 3px;height:16px;background:var(--gold);}
+
+  #file-list{display:grid;gap:3px;}
+
+  /* FILE CARD — bigger, more readable */
+  .file-card{
+    background:var(--bg2);border:1px solid var(--border);
+    padding:26px 30px;
+    display:flex;align-items:center;gap:24px;
+    cursor:default;position:relative;overflow:hidden;
+    transition:border-color .25s,background .25s,transform .2s;
+    animation:slideIn .4s ease both;
+  }
+  .file-card::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(245,200,66,.04),transparent);transform:translateX(-100%);transition:transform .5s ease;}
+  .file-card:hover::before{transform:translateX(100%);}
+  .file-card:hover{border-color:var(--gold);background:var(--accent);transform:translateX(6px);}
+  @keyframes slideIn{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
+
+  .file-icon{
+    width:60px;height:60px;
+    background:linear-gradient(135deg,var(--gold),var(--gold2));
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:900;color:#000;flex-shrink:0;
+    font-family:'Rajdhani',sans-serif;letter-spacing:1px;
+  }
+  .file-info{flex:1;min-width:0;}
+  .file-name{
+    font-size:18px;font-weight:700;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    color:var(--text);margin-bottom:6px;
+  }
+  .file-desc{font-size:14px;color:var(--text2);margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .file-meta{display:flex;gap:24px;flex-wrap:wrap;}
+  .file-meta span{font-size:13px;color:var(--text2);letter-spacing:1px;}
+  .file-meta .highlight{color:var(--gold3);}
+
+  .file-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;}
+  .file-cat{background:rgba(245,200,66,.12);color:var(--gold);font-size:11px;padding:5px 14px;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(245,200,66,.3);}
+
+  .dl-btn{
+    background:transparent;border:2px solid var(--gold);color:var(--gold);
+    padding:13px 28px;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    cursor:pointer;transition:all .22s;font-family:'Outfit',sans-serif;
+    position:relative;overflow:hidden;
+  }
+  .dl-btn::before{content:'';position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .22s ease;}
+  .dl-btn span{position:relative;z-index:1;}
+  .dl-btn:hover::before{transform:scaleX(1);}
+  .dl-btn:hover span{color:#000;}
+
+  /* EMPTY */
+  .empty{text-align:center;padding:90px 20px;color:var(--text2);}
+  .empty-icon{font-size:64px;opacity:.18;margin-bottom:16px;}
+  .empty-text{font-size:15px;letter-spacing:2px;text-transform:uppercase;}
+
+  /* LOADING */
+  .loading{text-align:center;padding:70px;color:var(--gold);letter-spacing:3px;font-size:13px;text-transform:uppercase;}
+  .loading::after{content:'';animation:dots 1.5s infinite;}
+  @keyframes dots{0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'}}
+
+  /* PROGRESS BAR */
+  .dl-progress{position:fixed;top:72px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold3),var(--gold));background-size:200%;animation:progressFlow 1s linear infinite;display:none;z-index:999;}
+  .dl-progress.active{display:block;}
+  @keyframes progressFlow{0%{background-position:100%}100%{background-position:-100%}}
+
+  /* FOOTER */
+  footer{background:var(--bg2);border-top:1px solid var(--border);padding:32px 40px;text-align:center;}
+  .footer-owner strong{color:var(--gold);font-size:16px;}
+  .footer-owner{font-size:14px;color:var(--text2);}
+  .footer-contact{margin-top:8px;font-size:13px;color:var(--text2);}
+  .footer-contact a{color:var(--gold);text-decoration:none;font-weight:700;}
+  .footer-divider{width:60px;height:1px;background:var(--gold);margin:16px auto;}
+  .footer-copy{font-size:11px;color:var(--border);letter-spacing:2px;text-transform:uppercase;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:30px;right:30px;z-index:9999;background:var(--bg2);border:1px solid var(--gold);padding:14px 24px;font-size:14px;color:var(--text);transform:translateY(100px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 30px rgba(245,200,66,.2);}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.error{border-color:var(--red);}
+
+  @media(max-width:640px){
+    header{padding:0 16px;}
+    .owner-tag{display:none;}
+    .stat{padding:0 18px;}
+    .file-card{padding:16px;gap:14px;}
+    .file-icon{width:48px;height:48px;font-size:13px;}
+    .file-name{font-size:15px;}
+    .dl-btn{padding:11px 18px;font-size:12px;}
+  }
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<div class="dl-progress" id="dlProgress"></div>
+<div class="wrapper">
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-text">FILE HUB</div>
+        <div class="logo-badge">VIP</div>
+      </div>
+      <div class="owner-tag">
+        <span>Owner:</span>
+        <span class="owner-name">Nguyễn Tấn Dũng</span>
+        <span>|</span>
+        <span>Zalo/Hotline:</span>
+        <a href="tel:0325708289" class="hotline">0325.708.289</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-title">KHO FILE</div>
+    <div class="hero-sub">Tải xuống tốc độ cao — Hoàn toàn miễn phí</div>
+    <div class="hero-line">
+      <div class="line-seg"></div>
+      <div class="line-diamond"></div>
+      <div class="line-seg"></div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num" id="stat-files">0</div><div class="stat-label">Tổng File</div></div>
+    <div class="stat"><div class="stat-num" id="stat-dl">0</div><div class="stat-label">Lượt Tải</div></div>
+    <div class="stat"><div class="stat-num">24/7</div><div class="stat-label">Hoạt Động</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Miễn Phí</div></div>
+  </div>
+
+  <div class="search-wrap">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Tìm kiếm tên file, mô tả..." autocomplete="off">
+      <button onclick="applySearch()">TÌM</button>
+    </div>
+  </div>
+
+  <div class="filter-wrap" id="filterWrap">
+    <div class="filter-tab active" data-cat="Tất cả" onclick="filterBy(this,'Tất cả')">Tất cả</div>
+  </div>
+
+  <div class="files-section">
+    <div class="section-label">Danh sách file</div>
+    <div id="file-list"><div class="loading">Đang tải</div></div>
+  </div>
+
+  <footer>
+    <div class="footer-owner"><strong>Nguyễn Tấn Dũng</strong></div>
+    <div class="footer-contact">Zalo / Hotline: <a href="tel:0325708289">0325.708.289</a></div>
+    <div class="footer-divider"></div>
+    <div class="footer-copy">FILE HUB &copy; 2024 — All rights reserved</div>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── PARTICLES ──────────────────────────────────────
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+
+class Particle{
+  constructor(){this.reset(true);}
+  reset(init){
+    this.x=Math.random()*W;this.y=init?Math.random()*H:H+10;
+    this.size=Math.random()*1.5+.3;this.speedX=(Math.random()-.5)*.35;
+    this.speedY=-Math.random()*.55-.1;this.opacity=Math.random()*.55+.1;
+    this.life=1;this.decay=Math.random()*.004+.001;
+  }
+  update(){this.x+=this.speedX;this.y+=this.speedY;this.life-=this.decay;if(this.life<=0)this.reset(false);}
+  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle=`rgba(245,200,66,${this.opacity*this.life})`;ctx.fill();}
+}
+for(let i=0;i<130;i++) particles.push(new Particle());
+(function animate(){requestAnimationFrame(animate);ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.update();p.draw();});})();
+
+// ── DATA ─────────────────────────────────────────
+let allFiles=[],activeCategory='Tất cả',searchQuery='';
+
+async function loadFiles(){
+  try{
+    const res=await fetch('/api/files');
+    allFiles=await res.json();
+    buildStats();buildCategories();renderFiles();
+  }catch(e){showToast('Lỗi kết nối server','error');}
+}
+
+function buildStats(){
+  animCount(document.getElementById('stat-files'),allFiles.length);
+  animCount(document.getElementById('stat-dl'),allFiles.reduce((a,f)=>a+(f.downloads||0),0));
+}
+function animCount(el,target){let cur=0;const step=Math.max(1,Math.ceil(target/40));const t=setInterval(()=>{cur+=step;if(cur>=target){cur=target;clearInterval(t);}el.textContent=cur;},28);}
+
+function buildCategories(){
+  const cats=['Tất cả',...new Set(allFiles.map(f=>f.category).filter(Boolean))];
+  const wrap=document.getElementById('filterWrap');
+  wrap.innerHTML='';
+  cats.forEach(c=>{
+    const el=document.createElement('div');
+    el.className='filter-tab'+(c===activeCategory?' active':'');
+    el.textContent=c;el.dataset.cat=c;
+    el.onclick=()=>filterBy(el,c);
+    wrap.appendChild(el);
+  });
+}
+function filterBy(el,cat){document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');activeCategory=cat;renderFiles();}
+function applySearch(){searchQuery=document.getElementById('searchInput').value.toLowerCase();renderFiles();}
+document.getElementById('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')applySearch();});
+
+function renderFiles(){
+  const list=document.getElementById('file-list');
+  const filtered=allFiles.filter(f=>{
+    const catMatch=activeCategory==='Tất cả'||f.category===activeCategory;
+    const search=!searchQuery||f.name.toLowerCase().includes(searchQuery)||(f.description||'').toLowerCase().includes(searchQuery);
+    return catMatch&&search;
+  });
+  if(!filtered.length){
+    list.innerHTML=`<div class="empty"><div class="empty-icon">◇</div><div class="empty-text">Không có file nào</div></div>`;
+    return;
+  }
+  list.innerHTML=filtered.map((f,i)=>`
+    <div class="file-card" style="animation-delay:${i*0.045}s">
+      <div class="file-icon">${getExt(f.name)}</div>
+      <div class="file-info">
+        <div class="file-name">${escHtml(f.name)}</div>
+        ${f.description?`<div class="file-desc">${escHtml(f.description)}</div>`:''}
+        <div class="file-meta">
+          <span class="highlight">${formatSize(f.size)}</span>
+          <span>${formatDate(f.uploadedAt)}</span>
+          <span>${f.downloads||0} lượt tải</span>
+        </div>
+      </div>
+      <div class="file-right">
+        <span class="file-cat">${escHtml(f.category||'Khác')}</span>
+        <button class="dl-btn" onclick="downloadFile('${f.id}','${escHtml(f.name).replace(/'/g,"\\'")}')"><span>TẢI XUỐNG</span></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function downloadFile(id,name){
+  const bar=document.getElementById('dlProgress');
+  bar.classList.add('active');showToast('Đang chuẩn bị: '+name);
+  try{
+    const res=await fetch('/api/download/'+id);
+    if(!res.ok) throw new Error();
+    const blob=await res.blob();
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download=name;a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('Tải thành công!');
+    setTimeout(loadFiles,1000);
+  }catch(e){showToast('Lỗi tải file','error');}
+  finally{setTimeout(()=>bar.classList.remove('active'),800);}
+}
+
+function getExt(name){const p=name.lastIndexOf('.');return p>=0?name.slice(p+1).toUpperCase().slice(0,4):'FILE';}
+function formatSize(b){if(!b)return'—';if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';if(b<1073741824)return(b/1048576).toFixed(1)+'MB';return(b/1073741824).toFixed(2)+'GB';}
+function formatDate(iso){if(!iso)return'—';return new Date(iso).toLocaleDateString('vi-VN');}
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+let toastTimer;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show'+(type?' '+type:'');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+loadFiles();
+setInterval(loadFiles,30000);
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Upload files (không push lên git, tự tạo khi chạy)
+uploads/
+
+# Metadata file (không push, tự tạo khi chạy)
+files.json
+
+# Env
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

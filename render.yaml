@@ -1,0 +1,23 @@
+# FILE HUB — Render.com config
+# Docs: https://render.com/docs/render-yaml
+
+services:
+  - type: web
+    name: file-hub
+    env: node
+    plan: free          # Đổi thành "starter" nếu cần disk lưu file
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ADMIN_PASSWORD
+        value: ntd942010     # ← đổi mật khẩu ở đây nếu muốn
+      - key: PORT
+        value: 10000         # Render dùng port 10000
+      - key: DATA_DIR
+        value: /data         # Trỏ tới disk mount để lưu file vĩnh viễn
+    disk:
+      name: file-hub-data
+      mountPath: /data
+      sizeGB: 1              # 1GB lưu trữ (free tier không có disk)

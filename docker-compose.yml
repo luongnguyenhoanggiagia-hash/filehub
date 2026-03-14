@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  file-hub:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - ADMIN_PASSWORD=ntd942010
+      - DATA_DIR=/data
+    volumes:
+      # Lưu file và metadata vĩnh viễn trên VPS
+      - file-hub-data:/data
+
+volumes:
+  file-hub-data:

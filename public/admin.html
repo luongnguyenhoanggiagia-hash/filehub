@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADMIN — FILE HUB</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#f5c842;--gold2:#e8a800;--gold3:#fff0a0;
+    --bg:#0a0a0f;--bg2:#11111a;--bg3:#18182a;--accent:#1a1a30;
+    --text:#e8e8f0;--text2:#aaa;--border:#2a2a45;
+    --red:#ff3860;--green:#00e676;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;min-height:100vh;}
+  body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.07) 2px,rgba(0,0,0,.07) 4px);pointer-events:none;z-index:0;}
+  #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .wrapper{position:relative;z-index:1;}
+
+  /* HEADER */
+  header{background:linear-gradient(135deg,#0d0d18,#1a1a30,#0d0d18);border-bottom:2px solid var(--gold);padding:0 40px;box-shadow:0 0 40px rgba(245,200,66,.15);}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;height:72px;}
+  .logo-text{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;letter-spacing:4px;background:linear-gradient(90deg,var(--gold),#fff,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s infinite;background-size:200% auto;}
+  @keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+  .admin-badge{background:var(--red);color:#fff;font-size:10px;font-weight:900;padding:3px 10px;letter-spacing:2px;margin-left:12px;animation:pulse2 2s infinite;}
+  @keyframes pulse2{0%,100%{box-shadow:0 0 0 0 rgba(255,56,96,.5)}50%{box-shadow:0 0 0 6px rgba(255,56,96,0)}}
+  .nav-link{color:var(--text2);text-decoration:none;font-size:12px;letter-spacing:2px;text-transform:uppercase;border:1px solid var(--border);padding:8px 16px;transition:all .2s;}
+  .nav-link:hover{color:var(--gold);border-color:var(--gold);}
+  .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2);padding:8px 18px;font-size:11px;letter-spacing:2px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;text-transform:uppercase;}
+  .btn-outline:hover{border-color:var(--red);color:var(--red);}
+
+  /* LOGIN */
+  #loginScreen{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;background:var(--bg);}
+  .login-box{width:440px;max-width:95vw;border:1px solid var(--gold);background:var(--bg2);padding:52px 42px;box-shadow:0 0 60px rgba(245,200,66,.15);animation:loginSlide .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes loginSlide{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+  .login-title{font-family:'Rajdhani',sans-serif;font-size:34px;font-weight:700;letter-spacing:4px;text-align:center;color:var(--gold);margin-bottom:6px;}
+  .login-line{width:40px;height:2px;background:var(--gold);margin:10px auto;}
+  .login-sub{text-align:center;font-size:11px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:36px;}
+  .login-err{color:var(--red);font-size:12px;text-align:center;margin-top:12px;height:16px;letter-spacing:1px;}
+
+  /* FORMS */
+  .form-group{margin-bottom:20px;}
+  .form-group label{display:block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text2);margin-bottom:8px;}
+  .form-group input,.form-group select,.form-group textarea{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;padding:13px 16px;outline:none;transition:border-color .2s;resize:vertical;}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold);}
+  .form-group select option{background:var(--bg3);}
+
+  .btn-gold{width:100%;background:var(--gold);color:#000;border:none;padding:15px;font-weight:900;font-size:14px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s,transform .1s;}
+  .btn-gold:hover{background:var(--gold3);}
+  .btn-gold:active{transform:scale(.98);}
+  .btn-gold:disabled{opacity:.5;cursor:not-allowed;}
+
+  /* MAIN */
+  main{padding:32px 32px 80px;max-width:1120px;margin:0 auto;}
+  .page-title{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;letter-spacing:3px;color:var(--gold);display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+  .page-title::before{content:'';width:4px;height:28px;background:var(--gold);}
+
+  /* STATS */
+  .stats-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:28px;}
+  @media(max-width:700px){.stats-cards{grid-template-columns:1fr 1fr;}}
+  .stat-card{background:var(--bg2);border:1px solid var(--border);padding:22px;text-align:center;animation:fadeUp .5s ease both;}
+  .stat-card:nth-child(2){animation-delay:.05s;}.stat-card:nth-child(3){animation-delay:.1s;}.stat-card:nth-child(4){animation-delay:.15s;}
+  .sc-num{font-size:34px;font-weight:900;color:var(--gold);font-family:'Rajdhani',sans-serif;}
+  .sc-lbl{font-size:10px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+  /* UPLOAD */
+  .upload-section{background:var(--bg2);border:1px solid var(--border);padding:30px;margin-bottom:28px;animation:fadeUp .5s ease both;}
+  .section-title{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+  .section-title::before{content:'';width:3px;height:14px;background:var(--gold);}
+
+  .drop-zone{border:2px dashed var(--border);padding:48px;text-align:center;cursor:pointer;transition:all .25s;margin-bottom:20px;position:relative;}
+  .drop-zone:hover,.drop-zone.drag{border-color:var(--gold);background:rgba(245,200,66,.03);}
+  .drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .drop-icon{font-size:48px;color:var(--gold);opacity:.35;margin-bottom:12px;}
+  .drop-text{font-size:13px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;}
+  .drop-selected{font-size:15px;color:var(--gold);font-weight:600;margin-top:10px;}
+
+  .upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:600px){.upload-grid{grid-template-columns:1fr;}}
+
+  /* UPLOAD BAR */
+  .upload-bar-wrap{margin-top:16px;display:none;}
+  .upload-bar-wrap.show{display:block;}
+  .upload-bar-label{font-size:11px;color:var(--text2);letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;}
+  .upload-bar{height:4px;background:var(--border);overflow:hidden;}
+  .upload-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold3));width:0%;transition:width .3s;position:relative;}
+  .upload-bar-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:barShimmer 1s infinite;}
+  @keyframes barShimmer{from{transform:translateX(-100%)}to{transform:translateX(200%)}}
+
+  /* FILE TABLE */
+  .file-table-wrap{background:var(--bg2);border:1px solid var(--border);animation:fadeUp .5s .15s ease both;opacity:0;}
+  .table-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);}
+  table{width:100%;border-collapse:collapse;}
+  th{background:var(--bg3);padding:14px 18px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text2);text-align:left;border-bottom:1px solid var(--border);}
+  td{padding:16px 18px;border-bottom:1px solid rgba(42,42,69,.5);font-size:14px;vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(245,200,66,.025);}
+  .td-name{max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700;font-size:15px;}
+  .td-desc{font-size:12px;color:var(--text2);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px;}
+  .td-cat{background:rgba(245,200,66,.1);color:var(--gold);font-size:10px;padding:4px 12px;letter-spacing:1px;display:inline-block;}
+  .td-size{color:var(--text2);font-size:13px;}
+  .td-dl{color:var(--green);font-weight:700;font-family:'Rajdhani',sans-serif;font-size:18px;}
+  .btn-del{background:transparent;border:1px solid var(--red);color:var(--red);padding:8px 16px;font-size:11px;letter-spacing:2px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;text-transform:uppercase;}
+  .btn-del:hover{background:var(--red);color:#fff;}
+
+  .empty-table{text-align:center;padding:60px;color:var(--text2);}
+  .empty-table div{font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:30px;right:30px;z-index:9999;background:var(--bg2);border:1px solid var(--gold);padding:14px 24px;font-size:14px;color:var(--text);transform:translateY(100px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 30px rgba(245,200,66,.2);}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.error{border-color:var(--red);}
+  .toast.success{border-color:var(--green);}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-title">FILE HUB</div>
+    <div class="login-line"></div>
+    <div class="login-sub">Đăng nhập quản trị viên</div>
+    <div class="form-group">
+      <label>Mật khẩu admin</label>
+      <input type="password" id="pwInput" placeholder="Nhập mật khẩu..." onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-gold" onclick="doLogin()">XÁC NHẬN</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<div class="wrapper" id="mainApp" style="display:none">
+  <header>
+    <div class="header-inner">
+      <div style="display:flex;align-items:center">
+        <div class="logo-text">FILE HUB</div>
+        <div class="admin-badge">ADMIN</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <a href="/" class="nav-link">Trang chủ</a>
+        <button class="btn-outline" onclick="logout()">Đăng xuất</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-title">Quản lý file</div>
+
+    <div class="stats-cards">
+      <div class="stat-card"><div class="sc-num" id="sc-total">0</div><div class="sc-lbl">Tổng file</div></div>
+      <div class="stat-card"><div class="sc-num" id="sc-dl">0</div><div class="sc-lbl">Lượt tải</div></div>
+      <div class="stat-card"><div class="sc-num" id="sc-size">0</div><div class="sc-lbl">Dung lượng (MB)</div></div>
+      <div class="stat-card"><div class="sc-num" id="sc-cats">0</div><div class="sc-lbl">Danh mục</div></div>
+    </div>
+
+    <div class="upload-section">
+      <div class="section-title">Upload file mới</div>
+      <div class="drop-zone" id="dropZone">
+        <input type="file" multiple id="fileInput" onchange="onFileSelected()">
+        <div class="drop-icon">⬆</div>
+        <div class="drop-text">Kéo thả file vào đây hoặc nhấn để chọn</div>
+        <div class="drop-selected" id="dropSelected"></div>
+      </div>
+      <div class="upload-grid">
+        <div class="form-group">
+          <label>Danh mục</label>
+          <select id="catInput">
+            <option value="Phần mềm">Phần mềm</option>
+            <option value="Tài liệu">Tài liệu</option>
+            <option value="Game">Game</option>
+            <option value="Video">Video</option>
+            <option value="Âm nhạc">Âm nhạc</option>
+            <option value="Khác" selected>Khác</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Mô tả (tuỳ chọn)</label>
+          <input type="text" id="descInput" placeholder="Nhập mô tả file...">
+        </div>
+      </div>
+      <div class="upload-bar-wrap" id="uploadBarWrap">
+        <div class="upload-bar-label">Đang tải lên</div>
+        <div class="upload-bar"><div class="upload-bar-fill" id="uploadBarFill"></div></div>
+      </div>
+      <button class="btn-gold" onclick="doUpload()" style="margin-top:20px" id="uploadBtn">UPLOAD FILE</button>
+    </div>
+
+    <div class="file-table-wrap">
+      <div class="table-header">
+        <div class="section-title" style="margin-bottom:0">Danh sách file đã upload</div>
+        <span style="font-size:12px;color:var(--text2);letter-spacing:1px" id="fileCount"></span>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Tên file</th>
+              <th>Danh mục</th>
+              <th>Dung lượng</th>
+              <th>Ngày upload</th>
+              <th>Lượt tải</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="fileTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CANVAS BG ──────────────────────────────────────
+const canvas=document.getElementById('bg-canvas');
+const ctx=canvas.getContext('2d');
+let W,H;
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+const lines=Array.from({length:22},()=>({x:Math.random()*1e4,y:Math.random()*1e4,speed:Math.random()*.3+.1,alpha:Math.random()*.12}));
+(function draw(){
+  requestAnimationFrame(draw);ctx.clearRect(0,0,W,H);
+  lines.forEach(l=>{l.x+=l.speed;l.y+=l.speed*.4;if(l.x>W+200){l.x=-200;l.y=Math.random()*H;}ctx.strokeStyle=`rgba(245,200,66,${l.alpha})`;ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(l.x,l.y);ctx.lineTo(l.x-120,l.y-55);ctx.stroke();});
+})();
+
+// ── STATE ──────────────────────────────────────────
+let adminPw='',selectedFiles=[],allFiles=[];
+
+// ── LOGIN ──────────────────────────────────────────
+async function doLogin(){
+  const pw=document.getElementById('pwInput').value;
+  try{
+    const res=await fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
+    if(res.ok){
+      adminPw=pw;
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('mainApp').style.display='block';
+      loadFiles();
+    }else{
+      document.getElementById('loginErr').textContent='Sai mật khẩu admin';
+      document.getElementById('pwInput').style.borderColor='var(--red)';
+      setTimeout(()=>{document.getElementById('loginErr').textContent='';document.getElementById('pwInput').style.borderColor='';},2500);
+    }
+  }catch(e){document.getElementById('loginErr').textContent='Lỗi kết nối server';}
+}
+function logout(){adminPw='';location.reload();}
+
+// ── FILE SELECT ────────────────────────────────────
+function onFileSelected(){
+  selectedFiles=Array.from(document.getElementById('fileInput').files);
+  document.getElementById('dropSelected').textContent=selectedFiles.length===1?selectedFiles[0].name:(selectedFiles.length?`${selectedFiles.length} files được chọn`:'');
+}
+const dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');selectedFiles=Array.from(e.dataTransfer.files);document.getElementById('dropSelected').textContent=selectedFiles.length===1?selectedFiles[0].name:`${selectedFiles.length} files được chọn`;});
+
+// ── UPLOAD ─────────────────────────────────────────
+async function doUpload(){
+  if(!selectedFiles.length){showToast('Vui lòng chọn file','error');return;}
+  const cat=document.getElementById('catInput').value;
+  const desc=document.getElementById('descInput').value;
+  const uploadBtn=document.getElementById('uploadBtn');
+  uploadBtn.disabled=true;uploadBtn.textContent='ĐANG UPLOAD...';
+  const barWrap=document.getElementById('uploadBarWrap');
+  const barFill=document.getElementById('uploadBarFill');
+  barWrap.classList.add('show');
+  let done=0;
+  for(const file of selectedFiles){
+    const fd=new FormData();
+    fd.append('file',file);fd.append('password',adminPw);fd.append('category',cat);fd.append('description',desc);
+    try{
+      const res=await fetch('/api/admin/upload',{method:'POST',body:fd});
+      const data=await res.json();
+      if(data.success)done++;else showToast('Lỗi: '+data.error,'error');
+    }catch(e){showToast('Lỗi kết nối','error');}
+    barFill.style.width=`${Math.round(((done)/selectedFiles.length)*100)}%`;
+  }
+  setTimeout(()=>{
+    barWrap.classList.remove('show');barFill.style.width='0%';
+    uploadBtn.disabled=false;uploadBtn.textContent='UPLOAD FILE';
+    selectedFiles=[];document.getElementById('dropSelected').textContent='';
+    document.getElementById('fileInput').value='';
+    showToast(`Đã upload ${done} file thành công`,'success');
+    loadFiles();
+  },600);
+}
+
+// ── FILES ──────────────────────────────────────────
+async function loadFiles(){
+  try{
+    const res=await fetch('/api/files');
+    allFiles=await res.json();
+    renderStats();renderTable();
+  }catch(e){}
+}
+
+function renderStats(){
+  document.getElementById('sc-total').textContent=allFiles.length;
+  document.getElementById('sc-dl').textContent=allFiles.reduce((a,f)=>a+(f.downloads||0),0);
+  document.getElementById('sc-size').textContent=(allFiles.reduce((a,f)=>a+(f.size||0),0)/1048576).toFixed(1);
+  document.getElementById('sc-cats').textContent=new Set(allFiles.map(f=>f.category)).size;
+  document.getElementById('fileCount').textContent=allFiles.length+' file';
+}
+
+function renderTable(){
+  const tb=document.getElementById('fileTable');
+  if(!allFiles.length){
+    tb.innerHTML=`<tr><td colspan="6"><div class="empty-table"><div style="font-size:48px;opacity:.18">◇</div><div>Chưa có file nào</div></div></td></tr>`;
+    return;
+  }
+  tb.innerHTML=allFiles.map(f=>`
+    <tr>
+      <td>
+        <div class="td-name" title="${escHtml(f.name)}">${escHtml(f.name)}</div>
+        ${f.description?`<div class="td-desc">${escHtml(f.description)}</div>`:''}
+      </td>
+      <td><span class="td-cat">${escHtml(f.category||'Khác')}</span></td>
+      <td class="td-size">${formatSize(f.size)}</td>
+      <td class="td-size">${formatDate(f.uploadedAt)}</td>
+      <td class="td-dl">${f.downloads||0}</td>
+      <td><button class="btn-del" onclick="deleteFile('${f.id}')">XOÁ</button></td>
+    </tr>
+  `).join('');
+}
+
+async function deleteFile(id){
+  if(!confirm('Xác nhận xoá file này?'))return;
+  try{
+    const res=await fetch(`/api/admin/files/${id}?password=${encodeURIComponent(adminPw)}`,{method:'DELETE'});
+    const data=await res.json();
+    if(data.success){showToast('Đã xoá file','success');loadFiles();}
+    else showToast(data.error,'error');
+  }catch(e){showToast('Lỗi kết nối','error');}
+}
+
+// ── UTILS ──────────────────────────────────────────
+function formatSize(b){if(!b)return'—';if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';if(b<1073741824)return(b/1048576).toFixed(1)+'MB';return(b/1073741824).toFixed(2)+'GB';}
+function formatDate(iso){if(!iso)return'—';return new Date(iso).toLocaleString('vi-VN');}
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+let toastTimer;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+setInterval(()=>{if(adminPw)loadFiles();},30000);
+</script>
+</body>
+</html>
