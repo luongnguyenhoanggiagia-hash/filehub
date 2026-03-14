@@ -17,6 +17,7 @@
   body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;}
   body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.07) 2px,rgba(0,0,0,.07) 4px);pointer-events:none;z-index:0;}
   #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  #sakura-canvas{position:fixed;inset:0;z-index:2;pointer-events:none;}
   .wrapper{position:relative;z-index:1;}
 
   /* HEADER */
@@ -118,6 +119,7 @@
 </head>
 <body>
 <canvas id="bg-canvas"></canvas>
+<canvas id="sakura-canvas"></canvas>
 
 <!-- LOGIN -->
 <div id="loginScreen">
@@ -352,6 +354,93 @@ function showToast(msg,type=''){
 }
 
 setInterval(()=>{if(adminPw)loadFiles();},30000);
+
+// ── SAKURA (HOA ANH ĐÀO CAO CẤP) ───────────────────
+(function(){
+  const sc=document.getElementById('sakura-canvas');
+  const sx=sc.getContext('2d');
+  let SW,SH;
+  function sResize(){SW=sc.width=window.innerWidth;SH=sc.height=window.innerHeight;}
+  sResize();window.addEventListener('resize',sResize);
+
+  const COUNT=45;
+  const petals=[];
+
+  function makePetal(init){
+    return{
+      x:Math.random()*SW,
+      y:init?Math.random()*SH:-20,
+      s:Math.random()*0.5+0.5, // scale
+      s2:Math.random()+0.5,    // stretch
+      speedY:Math.random()*.8+.6,
+      speedX:Math.random()*.6-.3,
+      angle:Math.random()*Math.PI*2,
+      spin:Math.random()*.04-.02,
+      spin2:Math.random()*.05-.025, // 3D spin illusion
+      flip:Math.random()*Math.PI,
+      hue:Math.random()*15+340, // 340-355 pinkish red
+      alpha:Math.random()*.5+.4
+    };
+  }
+
+  for(let i=0;i<COUNT;i++) petals.push(makePetal(true));
+
+  // Vẽ 1 cánh hoa anh đào chuẩn bằng đường cong Bezier
+  function drawSakuraPetal(ctx){
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.bezierCurveTo(-5,-4,-9,-9,-7,-14);
+    ctx.bezierCurveTo(-5,-18,0,-20,2,-15); // Vết khuyết (notch) đặc trưng hoa anh đào
+    ctx.bezierCurveTo(4,-20,9,-18,7,-14);
+    ctx.bezierCurveTo(9,-9,5,-4,0,0);
+    ctx.closePath();
+  }
+
+  function drawPetal(p){
+    sx.save();
+    sx.translate(p.x,p.y);
+    sx.rotate(p.angle);
+    // Tạo hiệu ứng 3D lật bằng scale
+    sx.scale(p.s*Math.cos(p.flip), p.s*p.s2);
+    
+    // Gradient chân thực cho cánh hoa
+    const grad=sx.createLinearGradient(0,0,0,-20);
+    grad.addColorStop(0,`hsla(${p.hue}, 100%, 85%, ${p.alpha})`);
+    grad.addColorStop(0.5,`hsla(${p.hue}, 90%, 75%, ${p.alpha})`);
+    grad.addColorStop(1,`hsla(${p.hue}, 80%, 95%, ${p.alpha-0.2})`);
+
+    drawSakuraPetal(sx);
+    sx.fillStyle=grad;
+    
+    // Viền nhẹ cho cánh hoa thêm sắc nét
+    sx.lineWidth=0.5;
+    sx.strokeStyle=`hsla(${p.hue}, 80%, 65%, ${p.alpha})`;
+    sx.stroke();
+
+    sx.shadowColor=`hsla(${p.hue}, 100%, 70%, 0.4)`;
+    sx.shadowBlur=6;
+    sx.fill();
+    sx.restore();
+  }
+
+  (function sLoop(){
+    requestAnimationFrame(sLoop);
+    sx.clearRect(0,0,SW,SH);
+    petals.forEach(p=>{
+      p.y+=p.speedY;
+      p.x+=p.speedX+Math.sin(p.angle*0.5)*0.4;
+      p.angle+=p.spin;
+      p.flip+=p.spin2;
+      
+      if(p.y>SH+25||p.x<-35||p.x>SW+35){
+        const np=makePetal(false);
+        np.x=Math.random()*SW;
+        Object.assign(p,np);
+      }
+      drawPetal(p);
+    });
+  })();
+})();
 </script>
 </body>
 </html>
